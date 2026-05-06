@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Sutherland-Hodgman多边形裁剪算法计算公共色域 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="这个博客主要总结了在工作中设计实现的一种更高效计算公共色域的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sutherland-Hodgman多边形裁剪算法计算公共色域">
+<meta property="og:url" content="http://example.com/2026/05/06/Sutherland-Hodgman%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%A3%81%E5%89%AA%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%85%AC%E5%85%B1%E8%89%B2%E5%9F%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="这个博客主要总结了在工作中设计实现的一种更高效计算公共色域的方法。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-05-06T15:39:05.000Z">
+<meta property="article:modified_time" content="2026-05-06T15:51:13.238Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Sutherland-Hodgman多边形裁剪算法计算公共色域" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/05/06/Sutherland-Hodgman%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%A3%81%E5%89%AA%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%85%AC%E5%85%B1%E8%89%B2%E5%9F%9F/" class="article-date">
+  <time class="dt-published" datetime="2026-05-06T15:39:05.000Z" itemprop="datePublished">2026-05-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Sutherland-Hodgman多边形裁剪算法计算公共色域
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>这个博客主要总结了在工作中设计实现的一种更高效计算公共色域的方法。</p>
+<span id="more"></span>
+<h2 id="一、公共色域计算背景"><a href="#一、公共色域计算背景" class="headerlink" title="一、公共色域计算背景"></a>一、公共色域计算背景</h2><p>最近在完成屏幕色差校正功能开发，基本流程就是：求多个屏幕原始色域的公共色域，得到的公共色域即色差校正的目标色域，再将每个屏幕的原始色域往目标色域上调整。和色域调节不同，色差校正可能涉及多个屏幕，存在多个原始色域。之前在色域调节开发中，利用原始色域和目标色域求公共色域的方法便不再适用了。<br>通过对光学色彩知识的相关学习，我们知道色域本质上就是某个设备或标准所能表达的颜色范围，每个屏幕由于灯珠或液晶物理性质差异，能够呈现的颜色范围各不相同，这是原始色域；行业组织为了统一色彩再现，减少屏幕原始色域带来的视觉差异，制定了标准色域，如sRGB、DCI-P3、BT2020等。色域可以通过CIE 1931马蹄图上红绿蓝三基色围成三角形区域表示，面积越大能覆盖的颜色越丰富。因此求多个色域的公共色域就是找多个三角形的重叠部分的最大三角形。<br>基于以上背景，需要实现一个能快速得到多个色域重叠部分的算法，于是了解到了Sutherland-Hodgman多边形裁剪算法。</p>
+<h2 id="二、Sutherland-Hodgman多边形裁剪算法原理"><a href="#二、Sutherland-Hodgman多边形裁剪算法原理" class="headerlink" title="二、Sutherland-Hodgman多边形裁剪算法原理"></a>二、Sutherland-Hodgman多边形裁剪算法原理</h2><h3 id="1-核心思想（裁剪过程）"><a href="#1-核心思想（裁剪过程）" class="headerlink" title="1.核心思想（裁剪过程）"></a>1.核心思想（裁剪过程）</h3><p>这个算法的核心思想就是化整为零，顺序裁剪。每一次裁剪得到是明确的重叠部分多边形，这样不会出现很多重复的交点，在性能上有很大提升。<br>具体过程：有多个多边形$P_1, P_2, \dots, P_n$，要求交集，可以先固定一个主多边形(subject)，通常为$P_1$，然后用$p_2$裁剪(cliper)，得到中间结果多边形$R_1$，再用$P_3$裁剪$R_1$…，最终得到$R_{n-1}$即所有多边形的交集。<br>对于每次多边形的裁剪，按照逐边裁剪:用裁剪多边形的每条边依次裁剪主多边形每条边，每次裁剪后的输出，都作为下次输入。</p>
+<h3 id="2-裁剪方法"><a href="#2-裁剪方法" class="headerlink" title="2.裁剪方法"></a>2.裁剪方法</h3><p>裁剪多边形对主多边形的裁剪可以看作是双重循环，外层遍历所有裁剪边，内层遍历主多边形的每条边。利用裁剪边对多边形裁剪的方法可以通过数学中点与向量的关系来实现：</p>
+<ol>
+<li>首先定义裁剪边为一个有向线段，由<code>A</code>到<code>B</code>，沿着裁剪边的方向看，其左侧为内侧，右侧为外侧。对任意一点<code>P</code>，如果在裁剪边内侧，则属于重叠公共区域（保留），如果在外侧，则属于独立区域（舍弃）。点和有向边的位置关系可以通过数学上的二维向量叉积结果判断：</li>
+</ol>
+<ul>
+<li><p>构造向量 $\vec{AB} &#x3D; (B.x - A.x,; B.y - A.y)$</p>
+</li>
+<li><p>构造向量 $\vec{AP} &#x3D; (P.x - A.x,; P.y - A.y)$。</p>
+</li>
+<li><p>计算 $\vec{AB}$ 和 $\vec{AP}$ 的叉积 $z$ 分量：$$\text{cross}_z &#x3D; \vec{AB}_x \cdot \vec{AP}_y - \vec{AB}_y \cdot \vec{AP}_x$$</p>
+</li>
+<li><p><strong>判定规则：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">叉积值</th>
+<th align="left">含义</th>
+<th align="left">判定结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">$\text{cross}_z &gt; 0$</td>
+<td align="left">$\vec{AP}$ 在 $\vec{AB}$ 的逆时针方向</td>
+<td align="left">$P$ 在 $AB$ 的<strong>左侧（内侧）</strong></td>
+</tr>
+<tr>
+<td align="left">$\text{cross}_z &lt; 0$</td>
+<td align="left">$\vec{AP}$ 在 $\vec{AB}$ 的顺时针方向</td>
+<td align="left">$P$ 在 $AB$ 的<strong>右侧（外侧）</strong></td>
+</tr>
+<tr>
+<td align="left">$\text{cross}_z &#x3D; 0$</td>
+<td align="left">$P$ 在 $AB$ 所在的直线上</td>
+<td align="left">通常视为外侧（安全做法）</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<ol start="2">
+<li><p>主多边形可以看作一系列有序点$S &#x3D; [V_0, V_1, \dots, V_{n-1}]$构成的封闭多边形，我们可以对主多边形每条边的起点<code>S</code>、终点<code>E</code>位置与裁剪边的位置关系，来判断主边与裁剪边的关系：</p>
+<table>
+<thead>
+<tr>
+<th align="left">情况</th>
+<th align="center"><code>S</code>位置</th>
+<th align="center"><code>E</code>位置</th>
+<th align="left">动作</th>
+<th align="left">输出顶点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="center">内侧</td>
+<td align="center">内侧</td>
+<td align="left">主边完全在公共区域</td>
+<td align="left">保留终点<code>E</code></td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="center">内侧</td>
+<td align="center">外侧</td>
+<td align="left">主边离开公共区域</td>
+<td align="left">保留交点<code>I</code></td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="center">外侧</td>
+<td align="center">内侧</td>
+<td align="left">主边进入公共区域</td>
+<td align="left">保留交点<code>I</code> 和终点<code>E</code></td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="center">外侧</td>
+<td align="center">外侧</td>
+<td align="left">主边完全不在公共区域</td>
+<td align="left">全舍弃</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<p>PS：起点不需要考虑，因为遍历的下一个主边的起点会是当前主边的终点，起点会以终点形式提前加入到输出顶点中。<br>计算线段交点，可以利用向量叉积和线性方程组求解：</p>
+<ol>
+<li>对主有向边$\vec{SE}$和裁剪有向边$\vec{AB}$，可以用参数方程表示上面的任意点：<br>主边：$P(t) &#x3D; S + t \cdot (E - S)$<br>裁剪边：$Q(u) &#x3D; A + s \cdot (B - A)$</li>
+<li>主边和裁剪边的交点满足$P(t) &#x3D; Q(u)$，即存在某个$t$和某个$u$，使得：<br>$$S + t \cdot (E - S) &#x3D; A + u \cdot (B - A)$$<br>移向：<br>$$t \cdot (E - S) - u \cdot (B - A) &#x3D; (A - S)$$</li>
+<li>对于上式，可以看作$t$和$u$在二维空间的方程组，分别对$x,y$分量建立方程，有线性方程组：<br>$$\begin{cases}<br>(E.x - S.x) \cdot t + (A.x - B.x) \cdot u &#x3D; A.x - S.x \[6pt]<br>(E.y - S.y) \cdot t + (A.y - B.y) \cdot u &#x3D; A.y - S.y<br>\end{cases}$$</li>
+<li>解线性方程组（此处使用克莱姆法则，方便代码实现）</li>
+</ol>
+<ul>
+<li>分母（系数矩阵行列式）：<br>分母：$$\det &#x3D; \begin{vmatrix}<br>E.x - S.x &amp; A.x - B.x \<br>E.y - S.y &amp; A.y - B.y<br>\end{vmatrix} &#x3D; (E.x - S.x)(A.y - B.y) - (E.y - S.y)(A.x - B.x)$$<br>若分母计算出来为0，说明平行或共线，无交点。</li>
+<li>求$t$（把第一列换成常数项）<br>$$\det_t &#x3D; \begin{vmatrix}<br>A.x - S.x &amp; A.x - B.x \<br>A.y - S.y &amp; A.y - B.y<br>\end{vmatrix} &#x3D; (A.x - S.x)(A.y - B.y) - (A.y - S.y)(A.x - B.x)$$ $$t &#x3D; \frac{\det_t}{\det}$$</li>
+<li>求$u$（把第二列换成常数项）<br>$$\det_u &#x3D; \begin{vmatrix}<br>E.x - S.x &amp; A.x - S.x \<br>E.y - S.y &amp; A.y - S.y<br>\end{vmatrix} &#x3D; (E.x - S.x)(A.y - S.y) - (E.y - S.y)(A.x - S.x)$$ $$u &#x3D; \frac{\det_u}{\det}$$</li>
+</ul>
+<ol start="5">
+<li>把$t$或$u$带入表示参数方程，即可得到交点$I$：<br>$$I.x &#x3D; S.x + t \cdot (E.x - S.x)$$ $$I.y &#x3D; S.y + t \cdot (E.y - S.y)$$</li>
+<li>不过结合实际需求，裁剪边和主边的交点还需满足在两有向边之上，即$t$或$u$必须在$[0,1]$范围内。</li>
+</ol>
+<h2 id="三、计算公共色域"><a href="#三、计算公共色域" class="headerlink" title="三、计算公共色域"></a>三、计算公共色域</h2><p>通过裁剪算法可以得到所有色域的色度公共区域，但是这个区域并不完全是公共色域，因为这个区域极大可能不是一个色域三角形。<br>从公共区域中找到公共色域就比较简单了：</p>
+<h3 id="1-找最大的色域三角形"><a href="#1-找最大的色域三角形" class="headerlink" title="1.找最大的色域三角形"></a>1.找最大的色域三角形</h3><p>todo…</p>
+<h3 id="2-三角形顶点坐标与RGB对应，组成公共色域"><a href="#2-三角形顶点坐标与RGB对应，组成公共色域" class="headerlink" title="2.三角形顶点坐标与RGB对应，组成公共色域"></a>2.三角形顶点坐标与RGB对应，组成公共色域</h3><p>todo…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/05/06/Sutherland-Hodgman%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%A3%81%E5%89%AA%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%85%AC%E5%85%B1%E8%89%B2%E5%9F%9F/" data-id="cuid8S6nEe5_eqn5pmVx5NWj2" data-title="Sutherland-Hodgman多边形裁剪算法计算公共色域" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/04/24/blog260424/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">FirstBlog</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/04/">April 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/05/06/Sutherland-Hodgman%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%A3%81%E5%89%AA%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%85%AC%E5%85%B1%E8%89%B2%E5%9F%9F/">Sutherland-Hodgman多边形裁剪算法计算公共色域</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/24/blog260424/">FirstBlog</a>
+          </li>
+        
+          <li>
+            <a href="/2026/04/23/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
