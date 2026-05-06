@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>blog260424 | Hexo</title>
+  <title>FirstBlog | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="大家好，我是Jason Yeh~这是我第一次学会用Github&amp;hexo部署自己的博客，之前在CSDN上也有，不过那个平台有些呆。未来我将正式开始使用博客记录作为IT人的我在学习和工作上的心得与收获，希望与君共勉！！">
+  <meta name="description" content="大家好，我是Jason Yeh~第一次学会用Github &amp; hexo部署自己的博客，看起来比CSDN炫酷很多。后面我将使用博客，记录作为IT人的我，在工作上的学习心得与经验，希望与大家共勉！！（哈哈哈虽然大部分都是为了记录一下自己的学习知识，给自己看的） 第一个博客，那就简单记录一下搭建过程吧！！">
 <meta property="og:type" content="article">
-<meta property="og:title" content="blog260424">
+<meta property="og:title" content="FirstBlog">
 <meta property="og:url" content="http://example.com/2026/04/24/blog260424/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="大家好，我是Jason Yeh~这是我第一次学会用Github&amp;hexo部署自己的博客，之前在CSDN上也有，不过那个平台有些呆。未来我将正式开始使用博客记录作为IT人的我在学习和工作上的心得与收获，希望与君共勉！！">
+<meta property="og:description" content="大家好，我是Jason Yeh~第一次学会用Github &amp; hexo部署自己的博客，看起来比CSDN炫酷很多。后面我将使用博客，记录作为IT人的我，在工作上的学习心得与经验，希望与大家共勉！！（哈哈哈虽然大部分都是为了记录一下自己的学习知识，给自己看的） 第一个博客，那就简单记录一下搭建过程吧！！">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-04-23T16:44:57.000Z">
-<meta property="article:modified_time" content="2026-04-23T17:14:35.100Z">
+<meta property="article:modified_time" content="2026-05-06T15:31:15.286Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -87,7 +87,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      blog260424
+      FirstBlog
     </h1>
   
 
@@ -95,12 +95,34 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>大家好，我是Jason Yeh~<br>这是我第一次学会用Github&amp;hexo部署自己的博客，之前在CSDN上也有，不过那个平台有些呆。<br>未来我将正式开始使用博客记录作为IT人的我在学习和工作上的心得与收获，希望与君共勉！！</p>
+        <p>大家好，我是Jason Yeh~<br>第一次学会用Github &amp; hexo部署自己的博客，看起来比CSDN炫酷很多。<br>后面我将使用博客，记录作为IT人的我，在工作上的学习心得与经验，希望与大家共勉！！<br>（哈哈哈虽然大部分都是为了记录一下自己的学习知识，给自己看的）</p>
+<p>第一个博客，那就简单记录一下搭建过程吧！！</p>
 <span id="more"></span>
+<h3 id="一、环境配置"><a href="#一、环境配置" class="headerlink" title="一、环境配置"></a>一、环境配置</h3><ol>
+<li>下载安装<code>git</code>，链接: <a target="_blank" rel="noopener" href="https://git-scm.com/downloads%EF%BC%8C%E5%AE%89%E8%A3%85%E5%A5%BD%E5%90%8E%E9%BC%A0%E6%A0%87%E5%8F%B3%E9%94%AE%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%60Git">https://git-scm.com/downloads，安装好后鼠标右键可以看到`Git</a> Bash Here&#96;；</li>
+<li>注册一个<code>GitHub</code>账号，并且在<code>git</code>中配置SSH key，这一步的目的是便于将本地源码上传到GitHub，无需每次输入账号和密码，如果是很早之前配置的，建议重新配置一下，否则后面部署可能很大问题，终端输入<code>ssh -T git@github.com</code>测试是否成功；</li>
+<li>安装<code>node.js</code>，链接：<a target="_blank" rel="noopener" href="https://nodejs.org/en/download/%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%BB%88%E7%AB%AF%E8%BE%93%E5%85%A5%60node">https://nodejs.org/en/download/，可以通过终端输入`node</a> -v&#96;检测版本判断是否安装成功；</li>
+<li>安装<code>Hexo</code>，终端输入<code>pnpm install hex0 -g</code>，同样输入<code>hexo -v</code>检测版本判断是否安装成功；</li>
+<li>安装hexo依赖，终端输入<code>npm install --save hexo-deployer-git</code>；</li>
+</ol>
+<h3 id="二、搭建博客"><a href="#二、搭建博客" class="headerlink" title="二、搭建博客"></a>二、搭建博客</h3><ol>
+<li>新建一个本地目录用于存放博客源码，目录中右键打开<code>Bash</code>进入终端；</li>
+<li>初始化个人博客，<code>hexo init</code>；</li>
+<li>接下来就是按照<code>hexo</code>的命令完成搭建：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;postName&quot; #新建文章</span><br><span class="line">hexo new page &quot;pageName&quot; #新建页面</span><br><span class="line">hexo generate #生成静态页面至public目录</span><br><span class="line">hexo server #开启预览访问端口（默认端口4000，&#x27;ctrl + c&#x27;关闭server）</span><br><span class="line">hexo deploy #部署到GitHub</span><br><span class="line">hexo help  # 查看帮助</span><br><span class="line">hexo version  #查看Hexo的版本</span><br></pre></td></tr></table></figure>
+<p>经过上述<code>hexo g</code>和<code>hexo s</code>生成了静态网页并预览；<br>3. 上传到Github：Github新建一个仓库，起名为xxx.github.io（xxx为Github的注册账户名，必须一模一样，如果有大写字母需要改成小写字母）；<br>4. 修改本地目录下的_config.yml，在末尾增加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:Jason-Yeh/jason-yeh.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>最后就是部署：<code>hexo d</code>，部署时会自动把网页源码内容推送到仓库，也能在Github主页看到进度，黄色的点表示进行中，直至出现绿色的点表示success，如果失败也会有错误日志，注意Github发送的消息就行；</li>
+<li>后续如果对网页内容有修改，只需要<code>hexo g</code>+<code>hexo d</code>就行。</li>
+</ol>
+<h3 id="三、其他"><a href="#三、其他" class="headerlink" title="三、其他"></a>三、其他</h3><p>博客内容基于.md，需要相关语法；<br>个人主页的布局可以参考别人的网页模板，一般基于<code>JekyII</code></p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/04/24/blog260424/" data-id="cuid8YvuGwnG1OcZxA9ieMKE8" data-title="blog260424" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/04/24/blog260424/" data-id="cuid8YvuGwnG1OcZxA9ieMKE8" data-title="FirstBlog" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -151,7 +173,7 @@
       <ul>
         
           <li>
-            <a href="/2026/04/24/blog260424/">blog260424</a>
+            <a href="/2026/04/24/blog260424/">FirstBlog</a>
           </li>
         
           <li>
